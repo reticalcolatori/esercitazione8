@@ -1,0 +1,17 @@
+//File XDR per la definzione del contratto
+
+struct OutputFileScan{
+  int numeroCaratteri;
+int numeroParole;
+	int numeroLinee;
+};
+
+struct InputDirScan{
+	string nomeDirettorio;
+	int soglia;
+};
+
+program REMOTESCAN {
+
+} = 0x20000016;
+
