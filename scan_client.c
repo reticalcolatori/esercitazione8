@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <rpc/rpc.h>
 #include "scan.h"
 
@@ -8,7 +9,6 @@ int main(int argc, char const *argv[])
 {
     CLIENT *client;
     char *server;
-    char **echo_msg;
     char *currOperation;
 
     if(argc < 2){
@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
         exit(1);
     }
 
-    server = argv[1];
+    strcpy(server, argv[1]);
 
     client = clnt_create(server, REMOTESCAN, REMOTESCANVERS, "udp");
 
@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
     printf("Inserisci il tipo di operazione che intendi effettuare, EOF per terminare\nF --> file_scan\nD --> dir_scan...\n");
 
     //parametri da richiedere all'utente (INPUT delle procedure RPC)
-    char nomeFile[DIM];
+    char *nomeFile;
     char nomeDir[DIM];
     int soglia;
     InputDirScan inDirScan;
@@ -46,9 +46,9 @@ int main(int argc, char const *argv[])
             //OUT: struttura dati di tipo OutputFileScan (nCar, nParole, nLinee)
 
             printf("Inserisci il nome del file remoto da scansionare...\n");
-            gets(nomeFile);
+            fscanf(stdin, "%s", nomeFile);
 
-            resFileScan = file_scan_1(nomeFile, client);
+            resFileScan = file_scan_1(&nomeFile, client);
 
             if(resFileScan == NULL) {
                 clnt_perror(client, server);
@@ -64,11 +64,12 @@ int main(int argc, char const *argv[])
             //OUT: numero di file che soddisfa la specifica della soglia (DIMENSIONE) o < 0 se errore
 
             printf("Inserisci il nome della cartella da analizzare...\n");
-            gets(nomeDir);
+            fscanf(stdin, "%s", nomeDir);
+
 
             //TODO: inserisci la verifica ciclica del corretto inserimento
             printf("Inserisci la soglia minima per la dimensione dei file...\n");
-            fscanf(stdin, "%d", soglia);
+            fscanf(stdin, "%d", &soglia);
 
             inDirScan.nomeDirettorio = nomeDir;
             inDirScan.sogliaDimensione = soglia;
