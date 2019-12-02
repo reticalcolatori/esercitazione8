@@ -53,7 +53,6 @@ int main(int argc, char *argv[])
                 exit(0);
             }
 
-            strlen(nomeFile);
             printf("Nome file: %s\n", nomeFile);
 
             resFileScan = file_scan_1(&nomeFilePointer, client);
@@ -72,7 +71,6 @@ int main(int argc, char *argv[])
             //OUT: numero di file che soddisfa la specifica della soglia (DIMENSIONE) o < 0 se errore
 
             printf("Inserisci il nome della cartella da analizzare...\n");
-            //fscanf(stdin, "%s", nomeDir);
             if(gets(inDirScan.nomeDirettorio) == NULL){
                 //EOF
                 exit(0);
