@@ -5,18 +5,19 @@
 
 #define DIM 256
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
     CLIENT *client;
     char *server;
-    char *currOperation;
+
+    char currOperation[DIM];
 
     if(argc < 2){
         perror("Usage: client nomenodoserver");
         exit(1);
     }
 
-    strcpy(server, argv[1]);
+    server = argv[1];
 
     client = clnt_create(server, REMOTESCAN, REMOTESCANVERS, "udp");
 
@@ -25,13 +26,14 @@ int main(int argc, char const *argv[])
         exit(1);
     }
 
-    currOperation = (char*) malloc(DIM);
+    //currOperation = (char*) malloc(DIM);
     printf("Inserisci il tipo di operazione che intendi effettuare, EOF per terminare\nF --> file_scan\nD --> dir_scan...\n");
 
     //parametri da richiedere all'utente (INPUT delle procedure RPC)
-    char *nomeFile;
-    char nomeDir[DIM];
-    int soglia;
+    char nomeFile[DIM];
+    char *nomeFilePointer = nomeFile;
+    //char nomeDir[DIM];
+    //int soglia;
     InputDirScan inDirScan;
 
     //parametri che mi ritornano dalle procedure
@@ -46,14 +48,20 @@ int main(int argc, char const *argv[])
             //OUT: struttura dati di tipo OutputFileScan (nCar, nParole, nLinee)
 
             printf("Inserisci il nome del file remoto da scansionare...\n");
-            fscanf(stdin, "%s", nomeFile);
+            if(gets(nomeFile) == NULL){
+                //EOF: esco
+                exit(0);
+            }
 
-            resFileScan = file_scan_1(&nomeFile, client);
+            strlen(nomeFile);
+            printf("Nome file: %s\n", nomeFile);
+
+            resFileScan = file_scan_1(&nomeFilePointer, client);
 
             if(resFileScan == NULL) {
                 clnt_perror(client, server);
             } else {
-                printf("Ricevuto dal server %s il risultato dell'analisi del file richiesto:\n\t1) Numero caratteri = %d\n\t2) Numero parole = %d\n\t3) Numero linee = %d", server, resFileScan->numeroCaratteri, resFileScan->numeroParole, resFileScan->numeroLinee);
+                printf("Ricevuto dal server %s il risultato dell'analisi del file richiesto:\n\t1) Numero caratteri = %d\n\t2) Numero parole = %d\n\t3) Numero linee = %d\n", server, resFileScan->numeroCaratteri, resFileScan->numeroParole, resFileScan->numeroLinee);
             }
             
         }
@@ -64,15 +72,19 @@ int main(int argc, char const *argv[])
             //OUT: numero di file che soddisfa la specifica della soglia (DIMENSIONE) o < 0 se errore
 
             printf("Inserisci il nome della cartella da analizzare...\n");
-            fscanf(stdin, "%s", nomeDir);
+            //fscanf(stdin, "%s", nomeDir);
+            if(gets(inDirScan.nomeDirettorio) == NULL){
+                //EOF
+                exit(0);
+            }
 
+            printf("Nome direttorio: %s\n", inDirScan.nomeDirettorio);
 
             //TODO: inserisci la verifica ciclica del corretto inserimento
             printf("Inserisci la soglia minima per la dimensione dei file...\n");
-            fscanf(stdin, "%d", &soglia);
+            fscanf(stdin, "%d", &inDirScan.sogliaDimensione);
 
-            inDirScan.nomeDirettorio = nomeDir;
-            inDirScan.sogliaDimensione = soglia;
+            printf("Soglia: %d\n", inDirScan.sogliaDimensione);
 
             resDirScan = dir_scan_1(&inDirScan, client);
 
@@ -88,7 +100,6 @@ int main(int argc, char const *argv[])
 
     }
 
-    free(currOperation);
     clnt_destroy(client);
     exit(0);
 }
