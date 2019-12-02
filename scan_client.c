@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
 
         if(risFileScan == NULL){
             clnt_perror(cl, host);
-		    exit(1);
+            exit(1);
         }
 
         printf("Il file %s ha %d caratteri, %d linee e %d parole\n", nomeFileScan, risFileScan->numeroCaratteri, risFileScan->numeroLinee, risFileScan->numeroParole);
@@ -68,6 +68,7 @@ int main(int argc, char *argv[]){
         }
     }
 
+    clnt_destroy(cl);
 
     return 0;
 }
