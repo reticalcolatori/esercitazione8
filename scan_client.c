@@ -94,6 +94,10 @@ int main(int argc, char *argv[])
 
         }
 
+	//Mangio il fine linea.
+	char tmpBuf[10];
+	//gets(tmpBuf);
+
         printf("Inserisci il tipo di operazione che intendi effettuare, EOF per terminare\nF --> file_scan\nD --> dir_scan...\n");
 
     }
